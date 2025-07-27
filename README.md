@@ -1,27 +1,12 @@
-# Transmitly.ChannelProvider.{Name}
+# Transmitly.ChannelProvider.SendGrid.Sdk
 
-A [Transmitly](https://github.com/transmitly/transmitly) channel provider that {description}.
+A [Transmitly](https://github.com/transmitly/transmitly) channel provider dispatcher implementation using [SendGrid's Sdk](https://github.com/sendgrid/sendgrid-csharp).
 
 ### Getting started
 
-To use the {Name} channel provider, first install the [NuGet package](https://nuget.org/packages/transmitly.channelprovider.{name}):
+If you're just starting out with Transmitly, you likely want to be using the [transmitly-channel-provider-sendgrid](https://github.com/transmitly/transmitly-channel-provider-sendgrid) package instead.
 
-```shell
-dotnet add package Transmitly.ChannelProvider.{Name}
-```
-
-Then add the channel provider using `Add{Name}Support()`:
-
-```csharp
-using Transmitly;
-...
-var communicationClient = new CommunicationsClientBuilder()
-	.Add{Name}Support(options =>
-	{
-		
-	})
-```
-* See the [Transmitly](https://github.com/transmitly/transmitly) project for more details on what a channel provider is and how it can be configured.
+See the [Transmitly](https://github.com/transmitly/transmitly) project for more details on what a channel provider is and how it can be configured.
 
 
 <picture>
