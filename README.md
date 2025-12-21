@@ -1,6 +1,6 @@
 # Transmitly.ChannelProvider.SendGrid.Sdk
 
-A [Transmitly](https://github.com/transmitly/transmitly) channel provider dispatcher implementation using [SendGrid's Sdk](https://github.com/sendgrid/sendgrid-csharp).
+A [Transmitly™](https://github.com/transmitly/transmitly) channel provider dispatcher implementation using [SendGrid's Sdk](https://github.com/sendgrid/sendgrid-csharp).
 
 ### Getting started
 
