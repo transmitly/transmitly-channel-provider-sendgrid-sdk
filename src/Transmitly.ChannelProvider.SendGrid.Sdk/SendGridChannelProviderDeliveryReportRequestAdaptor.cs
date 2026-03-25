@@ -21,8 +21,16 @@ using System.Linq;
 
 namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 {
+	/// <summary>
+	/// Adapts SendGrid webhook payloads into Transmitly delivery reports.
+	/// </summary>
 	public sealed class SendGridChannelProviderDeliveryReportRequestAdaptor : IChannelProviderDeliveryReportRequestAdaptor
 	{
+		/// <summary>
+		/// Adapts the current request into a collection of delivery reports when the request matches the SendGrid webhook format.
+		/// </summary>
+		/// <param name="adaptorContext">The request adaptor context containing the webhook payload and query values.</param>
+		/// <returns>A collection of delivery reports, or <see langword="null"/> when the request should not be adapted.</returns>
 		public Task<IReadOnlyCollection<DeliveryReport>?> AdaptAsync(IRequestAdaptorContext adaptorContext)
 		{
 			if (!ShouldAdapt(adaptorContext))

@@ -25,6 +25,9 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 		
 		private const string ProviderKey = SendGridConstant.EmailPropertiesKey;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExtendedEmailChannelProperties"/> class.
+		/// </summary>
 		public ExtendedEmailChannelProperties()
 		{
 
@@ -42,6 +45,9 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 
 		}
 
+		/// <summary>
+		/// Gets or sets the SendGrid template identifier used for the email message.
+		/// </summary>
 		public string? TemplateId
 		{
 			get
@@ -54,6 +60,11 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 			}
 		}
 
+		/// <summary>
+		/// Creates an email channel property adapter for the specified email channel configuration.
+		/// </summary>
+		/// <param name="email">The email channel configuration to adapt.</param>
+		/// <returns>The adapted extended channel properties.</returns>
 		public IEmailExtendedChannelProperties Adapt(IEmailChannelConfiguration email)
 		{
 			return new ExtendedEmailChannelProperties(email);

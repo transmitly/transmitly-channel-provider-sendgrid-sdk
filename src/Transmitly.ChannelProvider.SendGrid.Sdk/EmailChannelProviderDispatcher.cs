@@ -35,7 +35,7 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EmailChannelProviderDispatcher"/> class with the specified SendGrid options.
 		/// </summary>
-		/// <param name="sendGridClientOptions"></param>
+		/// <param name="sendGridClientOptions">The SendGrid client configuration used to create outbound email requests.</param>
 		public EmailChannelProviderDispatcher(SendGridOptions sendGridClientOptions)
 		{
 			Guard.AgainstNull(sendGridClientOptions);

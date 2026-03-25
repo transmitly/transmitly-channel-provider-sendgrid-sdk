@@ -26,7 +26,10 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk
 		public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			Debug.Assert(typeToConvert == typeof(DateTimeOffset));
-			return DateTimeOffset.Parse(reader.GetString(), new CultureInfo("en-US"));
+			var value = reader.GetString();
+			if(string.IsNullOrWhiteSpace(value))
+				return DateTimeOffset.MinValue;
+			return DateTimeOffset.Parse(value, new CultureInfo("en-US"));
 		}
 
 		public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)

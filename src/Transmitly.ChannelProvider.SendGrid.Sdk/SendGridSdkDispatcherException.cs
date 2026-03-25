@@ -21,22 +21,39 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk
 	[Serializable]
 	public class SendGridSdkDispatcherException : Exception
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SendGridSdkDispatcherException"/> class.
+		/// </summary>
 		public SendGridSdkDispatcherException()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SendGridSdkDispatcherException"/> class with a specified error message.
+		/// </summary>
+		/// <param name="message">The message that describes the error.</param>
 		public SendGridSdkDispatcherException(string message) : base(message)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SendGridSdkDispatcherException"/> class with a specified error message and a reference to the inner exception.
+		/// </summary>
+		/// <param name="message">The message that describes the error.</param>
+		/// <param name="innerException">The exception that caused the current exception.</param>
 		public SendGridSdkDispatcherException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SendGridSdkDispatcherException"/> class with serialized data.
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <param name="context"></param>
 #if NET8_0_OR_GREATER
 		[Obsolete(DiagnosticId = "SYSLIB0051")] // add this attribute to the serialization ctor
 #endif
-		protected SendGridSdkDispatcherException(SerializationInfo exception, StreamingContext context) : base(exception, context)
+        protected SendGridSdkDispatcherException(SerializationInfo exception, StreamingContext context) : base(exception, context)
 		{
 
 		}
