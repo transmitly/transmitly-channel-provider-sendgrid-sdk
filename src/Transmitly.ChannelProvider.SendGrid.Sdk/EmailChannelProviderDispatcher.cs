@@ -14,7 +14,9 @@
 
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -37,6 +39,12 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 		/// </summary>
 		/// <param name="sendGridClientOptions">The SendGrid client configuration used to create outbound email requests.</param>
 		public EmailChannelProviderDispatcher(SendGridOptions sendGridClientOptions)
+			: this(sendGridClientOptions, null)
+		{
+		}
+
+		internal EmailChannelProviderDispatcher(SendGridOptions sendGridClientOptions, HttpClient? httpClient)
+			: base(httpClient)
 		{
 			Guard.AgainstNull(sendGridClientOptions);
 			Guard.AgainstNullOrWhiteSpace(sendGridClientOptions.ApiKey);
@@ -74,7 +82,7 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 			SendGridMessage? msg = null;
 
 			var client = CreateClient(restClient);
-			var emailProprties = new ExtendedEmailChannelProperties(email.ExtendedProperties);
+			var emailProprties = email.SendGrid();
 			var from = new EmailAddress(email.From.Value, email.From.Display);
 			var tos = email.To!.Select(m => new EmailAddress(m.Value, m.Display)).ToList();
 
@@ -102,6 +110,8 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 				throw new SendGridSdkDispatcherException("Unable to create a message to dispatch");
 			}
 
+			await AddAttachmentsAsync(msg, email.Attachments, communicationContext.ContentModel?.LinkedResources, cancellationToken).ConfigureAwait(false);
+
 			Dispatch(communicationContext, email);
 
 			var sendResponse = await client.SendEmailAsync(msg, cancellationToken).ConfigureAwait(false);
@@ -114,6 +124,30 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 				Error(communicationContext, email, results);
 
 			return results;
+		}
+
+		private static async Task AddAttachmentsAsync(SendGridMessage msg, IReadOnlyCollection<IEmailAttachment> attachments, IReadOnlyList<LinkedResource>? linkedResources, CancellationToken cancellationToken)
+		{
+			foreach (var attachment in attachments)
+				msg.AddAttachment(attachment.Name, await ToBase64Async(attachment.ContentStream, cancellationToken).ConfigureAwait(false), attachment.ContentType);
+
+			foreach (var resource in linkedResources ?? [])
+			{
+				// HTML refers to an inline image as cid:<content_id>; accept ids given with or without that prefix.
+				var contentId = resource.Id.StartsWith("cid:", StringComparison.OrdinalIgnoreCase) ? resource.Id.Substring(4) : resource.Id;
+				msg.AddAttachment(resource.Name ?? contentId, await ToBase64Async(resource.ContentStream, cancellationToken).ConfigureAwait(false), resource.ContentType, "inline", contentId);
+			}
+		}
+
+		private static async Task<string> ToBase64Async(Stream? stream, CancellationToken cancellationToken)
+		{
+			Guard.AgainstNull(stream);
+			// Every recipient's email shares the same resource streams, so read each one from the start.
+			if (stream!.CanSeek)
+				stream.Position = 0;
+			using var buffer = new MemoryStream();
+			await stream.CopyToAsync(buffer, 81920, cancellationToken).ConfigureAwait(false);
+			return Convert.ToBase64String(buffer.ToArray());
 		}
 
 		protected override void ConfigureHttpClient(HttpClient httpClient)

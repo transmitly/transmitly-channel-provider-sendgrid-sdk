@@ -18,23 +18,32 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Transmitly.Delivery;
 using System.Linq;
+using SendGrid.Helpers.EventWebhook;
+using Transmitly.ChannelProvider.SendGrid.Configuration;
+using Transmitly.Util;
 
 namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 {
 	/// <summary>
 	/// Adapts SendGrid webhook payloads into Transmitly delivery reports.
 	/// </summary>
-	public sealed class SendGridChannelProviderDeliveryReportRequestAdaptor : IChannelProviderDeliveryReportRequestAdaptor
+	/// <param name="sendGridOptions">SendGrid options.</param>
+	public sealed class SendGridChannelProviderDeliveryReportRequestAdaptor(SendGridOptions sendGridOptions) : IChannelProviderDeliveryReportRequestAdaptor
 	{
+		private readonly SendGridOptions _sendGridOptions = Guard.AgainstNull(sendGridOptions);
+
 		/// <summary>
 		/// Adapts the current request into a collection of delivery reports when the request matches the SendGrid webhook format.
 		/// </summary>
 		/// <param name="adaptorContext">The request adaptor context containing the webhook payload and query values.</param>
 		/// <returns>A collection of delivery reports, or <see langword="null"/> when the request should not be adapted.</returns>
+		/// <exception cref="DeliveryReportRequestValidationException">The request's signature is invalid.</exception>
 		public Task<IReadOnlyCollection<DeliveryReport>?> AdaptAsync(IRequestAdaptorContext adaptorContext)
 		{
 			if (!ShouldAdapt(adaptorContext))
 				return Task.FromResult<IReadOnlyCollection<DeliveryReport>?>(null);
+
+			ValidateSignature(adaptorContext);
 
 			var statuses = JsonSerializer.Deserialize<List<SendGridEmailWebhookEvent>>(adaptorContext.Content!);
 
@@ -73,6 +82,32 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 				(adaptorContext.GetQueryValue(DeliveryUtil.ChannelProviderIdKey)?.StartsWith(Id.ChannelProvider.SendGrid(), StringComparison.InvariantCultureIgnoreCase) ?? false);
 
 
+		}
+
+		// https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/getting-started-event-webhook-security-features
+		private void ValidateSignature(IRequestAdaptorContext adaptorContext)
+		{
+			if (!_sendGridOptions.ValidateDeliveryReportSignature)
+				return;
+			if (string.IsNullOrWhiteSpace(_sendGridOptions.EventWebhookVerificationKey))
+				throw new DeliveryReportRequestValidationException("SendGrid EventWebhookVerificationKey is required to validate event webhooks.");
+
+			var signature = adaptorContext.GetHeaderValue(RequestValidator.SIGNATURE_HEADER);
+			var timestamp = adaptorContext.GetHeaderValue(RequestValidator.TIMESTAMP_HEADER);
+			bool valid;
+			try
+			{
+				var validator = new RequestValidator();
+				valid = !string.IsNullOrEmpty(signature) && !string.IsNullOrEmpty(timestamp) &&
+					validator.VerifySignature(validator.ConvertPublicKeyToECDSA(_sendGridOptions.EventWebhookVerificationKey), adaptorContext.Content, signature, timestamp);
+			}
+			catch (Exception)
+			{
+				// Malformed signature or key.
+				valid = false;
+			}
+			if (!valid)
+				throw new DeliveryReportRequestValidationException("SendGrid event webhook signature is invalid.");
 		}
 	}
 }

@@ -20,13 +20,17 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 	{
 		public static CommunicationsStatus ToDispatchStatus(string? eventName)
 		{
-			var subStatus = (eventName?.ToUpperInvariant()) switch
+			// https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event
+			var name = eventName ?? "Unknown";
+			return (eventName?.ToUpperInvariant()) switch
 			{
-				"DELIVERED" => 2,
-				"DEFERRED" or "PROCESSED" => 1,
-				_ => 0
+				"DELIVERED" => CommunicationsStatus.Success(SendGridConstant.Id, name, 2),
+				"PROCESSED" or "DEFERRED" => CommunicationsStatus.Info(SendGridConstant.Id, name, 1),
+				"OPEN" or "CLICK" or "SPAMREPORT" or "UNSUBSCRIBE" or "GROUP_UNSUBSCRIBE" or "GROUP_RESUBSCRIBE" or "ACCOUNT_STATUS_CHANGE" => 
+					CommunicationsStatus.Info(SendGridConstant.Id, name),
+				"BOUNCE" or "DROPPED" => CommunicationsStatus.ServerError(SendGridConstant.Id, name),
+				_ => CommunicationsStatus.ClientError(SendGridConstant.Id, name)
 			};
-			return CommunicationsStatus.Success(SendGridConstant.Id, eventName ?? "Unknown", subStatus);
 		}
 	}
 }

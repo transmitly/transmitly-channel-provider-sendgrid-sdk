@@ -18,28 +18,27 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 	{
 		public static SendGridEmailDeliveryReport ApplyExtendedProperties(this SendGridEmailDeliveryReport emailDeliveryReport, SendGridEmailWebhookEvent report)
 		{
-			_ = new ExtendedEmailDeliveryReportProperties(emailDeliveryReport)
-			{
-				AsmGroupId = report.AsmGroupId,
-				MessageId = report.MessageId,
-				From = report.From,
-				EventId = report.EventId,
-				Event = report.Event,
-				Email = report.Email,
-				Domain = report.Domain,
-				Categories = report.Categories,
-				BounceClassification = report.BounceClassification,
-				Reason = report.Reason,
-				Response = report.Response,
-				MachineOpen = report.MachineOpen,
-				SmtpId = report.SmtpId,
-				Status = report.Status,
-				Timestamp = report.Timestamp,
-				Type = report.Type,
-				Url = report.Url,
-				UserAgent = report.UserAgent
-			};
-
+			var email = emailDeliveryReport.SendGrid().Email;
+			email.Email = report.Email;
+			email.Domain = report.Domain;
+			email.From = report.From;
+			email.Timestamp = report.Timestamp;
+			email.SmtpId = report.SmtpId;
+			email.BounceClassification = report.BounceClassification;
+			email.Event = report.Event;
+			email.Categories = report.Categories;
+			email.EventId = report.EventId;
+			email.MessageId = report.MessageId;
+			email.Reason = report.Reason;
+			email.Status = report.Status;
+			email.Type = report.Type;
+			email.Response = report.Response;
+			email.UserAgent = report.UserAgent;
+			email.Url = report.Url;
+			email.MachineOpen = report.MachineOpen;
+			email.AsmGroupId = report.AsmGroupId;
+			email.Ip = report.Ip;
+			email.Attempt = report.Attempt;
 			return emailDeliveryReport;
 		}
 	}

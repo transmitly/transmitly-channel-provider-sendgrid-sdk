@@ -13,9 +13,7 @@ That package registers this SDK implementation for you.
 ## What This Package Provides
 
 - `EmailChannelProviderDispatcher` for the `Email` channel.
-- `ExtendedEmailChannelProperties` for SendGrid-specific email settings.
-- `SendGridChannelProviderDeliveryReportRequestAdaptor` for SendGrid event webhooks.
-- Concrete delivery-report property types for SendGrid webhook payload data.
+- SendGrid-specific settings (`email.SendGrid().TemplateId`) and delivery-report values (`report.SendGrid().Email`).
 
 ## Using This Package Directly (Advanced)
 
@@ -34,7 +32,6 @@ var options = new SendGridOptions
 builder.ChannelProvider
 	.Build(Id.ChannelProvider.SendGrid(), options)
 	.AddDispatcher<EmailChannelProviderDispatcher, IEmail>(Id.Channel.Email())
-	.AddEmailExtendedPropertiesAdaptor<ExtendedEmailChannelProperties>()
 	.AddDeliveryReportRequestAdaptor<SendGridChannelProviderDeliveryReportRequestAdaptor>()
 	.Register();
 ```

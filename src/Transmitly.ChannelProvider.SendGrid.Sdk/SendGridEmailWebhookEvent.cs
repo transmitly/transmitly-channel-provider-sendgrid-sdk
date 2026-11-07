@@ -30,8 +30,10 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 		[JsonPropertyName("from")]
 		public string? From { get; set; }
 
+		// SendGrid's docs show both "5" and 5.
 		[JsonPropertyName("attempt")]
-		public string? Attempt { get; set; }
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+		public int? Attempt { get; set; }
 
 		[JsonPropertyName("timestamp")]
 		[JsonConverter(typeof(UnixToDateTimeOffsetConverter))]
@@ -46,7 +48,9 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 		[JsonPropertyName("event")]
 		public string? Event { get; set; }
 
+		// A string when the message was sent with a single category, otherwise an array.
 		[JsonPropertyName("category")]
+		[JsonConverter(typeof(StringOrArrayConverter))]
 		public List<string>? Categories { get; set; }
 
 		[JsonPropertyName("sg_event_id")]

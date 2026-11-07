@@ -32,8 +32,10 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Email
 		/// <returns>The parsed <see cref="DateTimeOffset"/> value.</returns>
 		public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			// Assuming the Unix time is in seconds
-			long unixTimeSeconds = reader.GetInt64();
+			// Unix seconds. SendGrid's docs type it as a string, though every example is a number.
+			long unixTimeSeconds = reader.TokenType == JsonTokenType.String
+				? long.Parse(reader.GetString()!, System.Globalization.CultureInfo.InvariantCulture)
+				: reader.GetInt64();
 			return DateTimeOffset.FromUnixTimeSeconds(unixTimeSeconds);
 		}
 
