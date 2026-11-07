@@ -36,7 +36,7 @@ namespace Transmitly.ChannelProvider.SendGrid.Sdk.Tests
 
 		public string? GetHeaderValue(string key) => headers != null && headers.TryGetValue(key, out var value) ? value : null;
 
-		string? IRequestAdaptorContext.GetValue(string key) => GetQueryValue(key);
+		string? IRequestAdaptorContext.GetValue(string key) => throw new System.NotSupportedException("The ASP.NET hosts throw here; use GetQueryValue, GetFormValue or GetHeaderValue.");
 
 		public string? Content => body;
 

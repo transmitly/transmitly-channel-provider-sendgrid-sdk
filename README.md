@@ -36,6 +36,8 @@ builder.ChannelProvider
 	.Register();
 ```
 
+The delivery-report adaptor only handles requests whose URL carries `tlyc=Email&tlycp=SendGrid`, so add both to your SendGrid event-webhook URL. See [Delivery Reports](https://github.com/transmitly/transmitly-channel-provider-sendgrid#delivery-reports) for the full setup, including signed webhooks.
+
 ## Related Packages
 
 - [Transmitly](https://github.com/transmitly/transmitly)
