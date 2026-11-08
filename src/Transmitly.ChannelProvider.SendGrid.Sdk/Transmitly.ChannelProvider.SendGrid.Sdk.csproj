@@ -42,8 +42,8 @@
 		<PackageReference Include="PolySharp" Version="1.16.0" PrivateAssets="All" />
 		<PackageReference Include="SendGrid" Version="9.29.3" />
 		<PackageReference Include="System.Text.Json" Version="10.0.14" Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' or '$(TargetFrameworkIdentifier)' == '.NETStandard'" />
-		<PackageReference Include="Transmitly" Version="0.4.6-2.49f3191" />
-		<PackageReference Include="Transmitly.ChannelProvider.SendGrid.Configuration" Version="0.4.6-2.13ba901" />
+		<PackageReference Include="Transmitly" Version="0.5.0" />
+		<PackageReference Include="Transmitly.ChannelProvider.SendGrid.Configuration" Version="0.5.0" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
 		<Reference Include="System.Net.Http" />
